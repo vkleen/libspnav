@@ -75,10 +75,15 @@ int spnav_open(void)
 {
 	int s;
 	struct sockaddr_un addr;
+    char *sock_path;
 
 	if(IS_OPEN) {
 		return -1;
 	}
+
+    sock_path = getenv("SPNAV_SOCK_PATH");
+    if (!sock_path)
+        sock_path = SPNAV_SOCK_PATH;
 
 	if(!(ev_queue = malloc(sizeof *ev_queue))) {
 		return -1;
@@ -92,7 +97,7 @@ int spnav_open(void)
 
 	memset(&addr, 0, sizeof addr);
 	addr.sun_family = AF_UNIX;
-	strncpy(addr.sun_path, SPNAV_SOCK_PATH, sizeof(addr.sun_path));
+	strncpy(addr.sun_path, sock_path, sizeof(addr.sun_path));
 
 
 	if(connect(s, (struct sockaddr*)&addr, sizeof addr) == -1) {
